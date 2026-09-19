@@ -6,14 +6,14 @@ on:
     paths:
       - .github/workflows/main.yml
       - packages/**/*.{js,ts,json}
-      - babel.config.js
+      - tools/**
       - package.json
       - pnpm-lock.yaml
-      - .eslintrc
+      - pnpm-workspace.yaml
   pull_request:
 
 jobs:
-  build:
+  verify:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -27,17 +27,13 @@ jobs:
     - uses: ./.github/actions/setup-deps
       with:
         node-version: ${{ matrix.node }}
-    - name: Build
-      run: pnpm run -r build
-    - name: lint & test
-      run: |
-        pnpm run -r lint
-        pnpm run -r coverage
-    - name: Submit coverage
-      if: matrix.node == 'latest'
-      uses: codecov/codecov-action@v6
+    - name: Verify workspace in release form
+      run: sh tools/verify.sh
+    - name: Save package-level verification summary
+      if: always()
+      uses: actions/upload-artifact@v4
       with:
-        fail_ci_if_error: true
-        token: ${{ secrets.CODECOV_TOKEN }}
-        version: v11.2.8
-        verbose: true # optional (default = false)
+        name: verify-summary-node-${{ matrix.node }}
+        path: .verify/summary.json
+        if-no-files-found: error
+        retention-days: 14

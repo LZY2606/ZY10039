@@ -8,7 +8,7 @@ import stylisticTs from '@stylistic/eslint-plugin-ts'
 
 export default defineConfig(
     {
-        ignores: ['**/dist/**'],
+        ignores: ['**/dist/**', 'tools/verify/**'],
     },
     js.configs.recommended,
     tseslint.configs.recommended,

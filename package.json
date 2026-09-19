@@ -10,7 +10,8 @@
   },
   "scripts": {
     "coverage.submit": "codecov --disable=gcov",
-    "prepare": "husky"
+    "prepare": "husky",
+    "verify": "sh tools/verify.sh"
   },
   "repository": {
     "type": "git",
