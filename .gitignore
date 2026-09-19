@@ -135,3 +135,6 @@ coverage/
 .parcel-cache/
 .vite/
 .turbo/
+
+# unified workspace verification artifacts
+.verify/
