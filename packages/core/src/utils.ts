@@ -1,0 +1,100 @@
+import { Condition, CompoundCondition, NULL_CONDITION } from './Condition';
+
+const hasOwn: (object: object, key: PropertyKey) => boolean = (Object as {
+  hasOwn?: (object: object, key: PropertyKey) => boolean
+}).hasOwn || ((object, key) => Object.prototype.hasOwnProperty.call(object, key));
+
+export function isCompound(operator: string, condition: Condition): condition is CompoundCondition {
+  return condition instanceof CompoundCondition && condition.operator === operator;
+}
+
+function flattenConditions<T extends Condition>(
+  operator: string,
+  conditions: T[]
+) {
+  let flatConditions: T[] | undefined;
+
+  for (let i = 0, length = conditions.length; i < length; i++) {
+    const currentNode = conditions[i];
+
+    if (currentNode instanceof CompoundCondition) {
+      if (currentNode.operator !== operator) {
+        if (flatConditions) flatConditions.push(currentNode);
+        continue;
+      }
+
+      if (currentNode.value.length === 0) {
+        continue;
+      }
+
+      if (!flatConditions) {
+        flatConditions = conditions.slice(0, i);
+      }
+
+      const nestedConditions = currentNode.value as T[];
+      for (let j = 0, nestedLength = nestedConditions.length; j < nestedLength; j++) {
+        flatConditions.push(nestedConditions[j]);
+      }
+    } else if (flatConditions) {
+      flatConditions.push(currentNode);
+    }
+  }
+
+  return flatConditions || conditions;
+}
+
+export function optimizedCompoundCondition<T extends Condition>(operator: string, conditions: T[]) {
+  if (conditions.length === 1) return conditions[0];
+  if (conditions.length === 0) return new CompoundCondition(operator, conditions);
+
+  const optimized = flattenConditions(operator, conditions);
+  if (optimized.length === 1) return optimized[0];
+  if (optimized.length === 0) return new CompoundCondition(operator, optimized);
+  return new CompoundCondition(operator, optimized);
+}
+
+export const identity = <T>(x: T) => x;
+export const object = () => Object.create(null);
+
+export const ignoreValue: IgnoreValue = Object.defineProperty(object(), '__@type@__', {
+  value: 'ignore value'
+});
+export interface IgnoreValue {
+  readonly ['__@type@__']: 'ignore value'
+}
+
+export function hasOperators<T>(
+  value: any,
+  instructions: Record<string, unknown>,
+  skipIgnore = false,
+): value is T {
+  if (!value || value && value.constructor !== Object) {
+    return false;
+  }
+
+  for (const prop in value) {
+    const hasProp = hasOwn(value, prop) && hasOwn(instructions, prop);
+    if (hasProp && (!skipIgnore || value[prop] !== ignoreValue)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+export function objectKeysSkipIgnore(anyObject: Record<string, unknown>) {
+  const keys: string[] = [];
+  for (const key in anyObject) {
+    if (hasOwn(anyObject, key) && anyObject[key] !== ignoreValue) {
+      keys.push(key);
+    }
+  }
+
+  return keys;
+}
+
+export function pushIfNonNullCondition(conditions: Condition[], condition: Condition) {
+  if (condition !== NULL_CONDITION) {
+    conditions.push(condition);
+  }
+}

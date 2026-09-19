@@ -1,0 +1,65 @@
+{
+  "name": "@ucast/js",
+  "version": "4.0.1",
+  "description": "git@github.com:stalniy/ucast.git",
+  "type": "commonjs",
+  "sideEffects": false,
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.mjs",
+  "es2015": "dist/esm/index.mjs",
+  "typings": "dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/esm/index.mjs",
+      "require": "./dist/cjs/index.js"
+    }
+  },
+  "scripts": {
+    "build": "rm -rf dist/* && tsc && tsdown -c ../../tsdown.config.mjs",
+    "lint": "eslint --ext .js,.ts src/ spec/",
+    "test": "mocha -r ts-node/register spec/*",
+    "coverage": "nyc -n src npm run test && nyc report --reporter=lcov",
+    "release.prepare": "npm run lint && npm test && NODE_ENV=production npm run build",
+    "release": "npm run release.prepare && pnpm publish"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "NOTICE",
+    "*.d.ts"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stalniy/ucast.git"
+  },
+  "keywords": [
+    "ast",
+    "interpreter",
+    "conditions",
+    "query",
+    "builder"
+  ],
+  "author": "Sergii Stotskyi <sergiy.stotskiy@freaksidea.com>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/stalniy/ucast/issues"
+  },
+  "homepage": "https://github.com/stalniy/ucast#readme",
+  "devDependencies": {
+    "@types/chai": "^4.2.11",
+    "@types/chai-spies": "^1.0.1",
+    "@types/mocha": "^7.0.2",
+    "chai": "^4.2.0",
+    "chai-spies": "^1.0.0",
+    "mocha": "^8.0.1",
+    "nyc": "^15.1.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "@ucast/core": "workspace:*"
+  }
+}

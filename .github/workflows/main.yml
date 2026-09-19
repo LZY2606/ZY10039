@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - .github/workflows/main.yml
+      - packages/**/*.{js,ts,json}
+      - babel.config.js
+      - package.json
+      - pnpm-lock.yaml
+      - .eslintrc
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node:
+          - 20 # April 30, 2026
+          - 22 # April 30, 2027
+          - 24 # 2027-06-16
+          - latest
+    steps:
+    - uses: actions/checkout@v6
+    - uses: ./.github/actions/setup-deps
+      with:
+        node-version: ${{ matrix.node }}
+    - name: Build
+      run: pnpm run -r build
+    - name: lint & test
+      run: |
+        pnpm run -r lint
+        pnpm run -r coverage
+    - name: Submit coverage
+      if: matrix.node == 'latest'
+      uses: codecov/codecov-action@v6
+      with:
+        fail_ci_if_error: true
+        token: ${{ secrets.CODECOV_TOKEN }}
+        version: v11.2.8
+        verbose: true # optional (default = false)

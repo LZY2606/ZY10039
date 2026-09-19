@@ -1,0 +1,117 @@
+{
+  "name": "@ucast/sql",
+  "version": "0.2.0",
+  "description": "git@github.com:stalniy/ucast.git",
+  "main": "dist/cjs/index.js",
+  "es2015": "dist/esm/index.mjs",
+  "typings": "dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/esm/index.mjs",
+      "require": "./dist/cjs/index.js"
+    },
+    "./mikro-orm": {
+      "types": "./dist/types/lib/mikro-orm.d.ts",
+      "import": "./dist/esm/lib/mikro-orm.mjs",
+      "require": "./dist/cjs/lib/mikro-orm.js"
+    },
+    "./objection": {
+      "types": "./dist/types/lib/objection.d.ts",
+      "import": "./dist/esm/lib/objection.mjs",
+      "require": "./dist/cjs/lib/objection.js"
+    },
+    "./sequelize": {
+      "types": "./dist/types/lib/sequelize.d.ts",
+      "import": "./dist/esm/lib/sequelize.mjs",
+      "require": "./dist/cjs/lib/sequelize.js"
+    },
+    "./typeorm": {
+      "types": "./dist/types/lib/typeorm.d.ts",
+      "import": "./dist/esm/lib/typeorm.mjs",
+      "require": "./dist/cjs/lib/typeorm.js"
+    }
+  },
+  "scripts": {
+    "build": "rm -rf dist/* && tsc && tsdown -c tsdown.config.mjs",
+    "lint": "eslint --ext .js,.ts src/ spec/",
+    "test": "mocha -r ts-node/register/transpile-only spec/*",
+    "coverage": "nyc -n src npm run test && nyc report --reporter=lcov",
+    "release.prepare": "npm run lint && npm test && NODE_ENV=production npm run build",
+    "release": "npm run release.prepare && pnpm publish"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stalniy/ucast.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "NOTICE",
+    "*.d.ts",
+    "objection",
+    "mikro-orm",
+    "sequelize",
+    "typeorm"
+  ],
+  "keywords": [
+    "sql",
+    "conditions",
+    "query",
+    "builder",
+    "ast"
+  ],
+  "author": "Sergii Stotskyi <sergiy.stotskiy@gmail.com>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/stalniy/ucast/issues"
+  },
+  "homepage": "https://github.com/stalniy/ucast#readme",
+  "devDependencies": {
+    "@mikro-orm/core": "^7.0.0",
+    "@mikro-orm/sqlite": "^7.0.0",
+    "@types/bluebird": "^3.5.32",
+    "@types/chai": "^4.2.11",
+    "@types/chai-spies": "^1.0.1",
+    "@types/mocha": "^7.0.2",
+    "@types/node": "^24.3.1",
+    "@types/validator": "^13.1.0",
+    "better-sqlite3": "^12.11.1",
+    "chai": "^4.2.0",
+    "chai-spies": "^1.0.0",
+    "knex": "^3.1.0",
+    "mocha": "^8.0.1",
+    "nyc": "^18.0.0",
+    "objection": "^3.1.5",
+    "reflect-metadata": "^0.2.2",
+    "sequelize": "^6.37.7",
+    "sqlite3": "^6.0.1",
+    "typeorm": "^1.0.0",
+    "typescript": "^5.9.2"
+  },
+  "peerDependencies": {
+    "@mikro-orm/core": "^6.0.0 || ^7.0.0",
+    "objection": "^2.0.0 || ^3.0.0",
+    "sequelize": "^5.0.0 || ^6.0.0",
+    "typeorm": "^0.2.0 || ^0.3.0 || ^1.0.0"
+  },
+  "peerDependenciesMeta": {
+    "objection": {
+      "optional": true
+    },
+    "sequelize": {
+      "optional": true
+    },
+    "@mikro-orm/core": {
+      "optional": true
+    },
+    "typeorm": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "@ucast/core": "workspace:*"
+  }
+}

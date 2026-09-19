@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig",
+  "include": [
+    "src/**/*",
+    "spec/**/*"
+  ],
+  "compilerOptions": {
+    "outDir": "dist/types",
+    "rootDir": ".",
+    "rewriteRelativeImportExtensions": false,
+    "allowImportingTsExtensions": true,
+    "allowJs": true,
+    "types": ["node", "mocha", "chai"]
+  }
+}
